@@ -39,6 +39,9 @@ Marble.RuntimeCompiler is a (as of right now incomplete) project that aims to ma
  - Build llvm with clang enabled.
    - Use -DLLVM_ENABLE_PROJECTS="clang" as an argument when running the cmake command.
    - Include ```... "cmake.configureSettings": { ... "LLVM_ENABLE_PROJECTS": "clang", ... }, ...``` in ```${workspaceFolder}/.vscode/settings.json``` for running cmake through CMake-Tools for Visual Studio Code ("..." means other fields).
+ - Configure Marble.RuntimeCompiler.
+ - Build Marble.RuntimeCompiler.
+ - Use testexecutable.exe to test whether stuff works.
 
 ## 
 pls dont sue me llvm
