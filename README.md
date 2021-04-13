@@ -44,6 +44,6 @@ Marble.RuntimeCompiler is a (as of right now incomplete) project that aims to ma
  - Use testexecutable.exe to test whether stuff works.
 
 ## License
-whatever license llvm is under\n
-no its not "stealing" sources im just _reappropriating_ them.\n
-pls dont sue me llvm\n
+whatever license llvm is under  
+no its not "stealing" sources im just _reappropriating_ them.  
+pls dont sue me llvm
