@@ -3,16 +3,16 @@
 ## Introduction
 Marble.RuntimeCompiler is a (as of right now incomplete) project that aims to make clang/llvm portable. It allows for the Runtime Compilation / Just-in-Time Compilation of C/C++, through the pure energy from my suffering that is ingrained through the code I have written.
 
-## Building
 ### Prerequisites:
  - LLVM built from source with clang enabled (Use -DLLVM_ENABLE_PROJECTS=clang when configuring with cmake).
- - A large quantity of patience.
- - Make sure the LLVM binaries are in your PATH.
 ### Instructions to build:
  - good luck ill write this later
 
-## Future Proofing:
-Steps to recreate this project if something breaks using different versions of llvm/clang:
+## Building
+ ### Prerequisites:
+ - A large quantity of patience.
+ - Make sure the LLVM binaries are in your PATH.
+ ### Preparing and Compiling:
  - Copy ```llvm-project/clang/tools/driver/driver.cpp```, ```llvm-project/clang/tools/driver/cc1_main.cpp```, ```llvm-project/clang/tools/driver/cc1as_main.cpp```, and ```llvm-project/clang/tools/driver/cc1gen_reproducer_main.cpp``` to ```Marble.RuntimeCompiler/clang-driver```.
  - Modify the llvm/clang source.
    - Remove
