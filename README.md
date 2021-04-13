@@ -6,8 +6,8 @@
 ## Instructions to build:
  - good luck ill write this later
 ## Future Proofing:
-Steps to recreate this project if something breaks:
- - Copy ```llvm-project/clang/tools/driver/driver.cpp```, ```llvm-project/clang/tools/driver/cc1_main.cpp```, ```llvm-project/clang/tools/driver/cc1as_main.cpp```, and ```llvm-project/clang/tools/driver/cc1gen_reproducer_main.cpp to Marble.RuntimeCompiler/clang-driver```.
+Steps to recreate this project if something breaks using different versions of llvm/clang:
+ - Copy ```llvm-project/clang/tools/driver/driver.cpp```, ```llvm-project/clang/tools/driver/cc1_main.cpp```, ```llvm-project/clang/tools/driver/cc1as_main.cpp```, and ```llvm-project/clang/tools/driver/cc1gen_reproducer_main.cpp``` to ```Marble.RuntimeCompiler/clang-driver```.
  - Modify the llvm/clang source.
    - Remove
      ```cpp
