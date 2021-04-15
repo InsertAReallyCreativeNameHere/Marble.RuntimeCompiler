@@ -1,7 +1,7 @@
 # Marble.RuntimeCompiler
 
 ## Introduction
-(No dont use this yet its still trash and doesnt work). Marble.RuntimeCompiler is a (as of right now incomplete) project that aims to make clang/llvm portable. It allows for the Runtime Compilation / Just-in-Time Compilation of C/C++, through the pure energy from my suffering that is ingrained through the code I have written.
+(No dont use this yet its still trash and doesnt work). Marble.RuntimeCompiler is a (as of right now incomplete) project that aims to make clang/llvm portable. It allows for the Runtime Compilation / Just-in-Time Compilation of C/C++, through the pure power of the horcrux that is the code I have written.
 
 ## Building
  ### Prerequisites:
