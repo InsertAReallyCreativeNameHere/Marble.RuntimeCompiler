@@ -32,6 +32,6 @@
  Check out the wiki!
 
 ## License
-GNUGPLv3 
+GNUGPLv3  
 no its not "stealing" sources im just _reappropriating_ them.  
 pls dont sue me llvm
