@@ -16,12 +16,6 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Begin modifiable options.
-
-set(CMAKE_BUILD_TYPE Debug)
-
-# End modifiable options.
-
 project(Marble.RuntimeCompiler)
 
 find_package(LLVM REQUIRED CONFIG)
@@ -30,7 +24,7 @@ find_package(Clang REQUIRED CONFIG)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic-errors") # Don't forget, put -flto back when done with making this library.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic-errors -std=c++17") # Don't forget, put -flto back when done with making this library.
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
     else()
@@ -42,7 +36,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(COMPILER "gcc")
     endif()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=lld -flto -pthread")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=lld -flto -pthread -std=c++17")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -50,7 +44,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
     endif()
-    set(COMPILER "CLang")
+    set(COMPILER "Clang")
 else()
     message(FATAL_ERROR "No supported compiler used.")
 endif()
@@ -61,24 +55,33 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin/${BUILD_ARCH}-${COMPILER}-${CMAKE_BUIL
 
 file(GLOB_RECURSE CMPSRCS configure_depends
     "${CMAKE_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_SOURCE_DIR}/clang-driver/*.cpp"
 )
 
 add_library(Marble.RuntimeCompiler SHARED ${CMPSRCS})
 
+execute_process(COMMAND llvm-config --libs OUTPUT_VARIABLE LIBS)
+execute_process(COMMAND llvm-config --system-libs OUTPUT_VARIABLE SYS_LIBS)
+execute_process(COMMAND llvm-config --ldflags OUTPUT_VARIABLE LDF)
+string(STRIP ${LIBS} LIBS)
+string(STRIP ${SYS_LIBS} SYS_LIBS)
+string(STRIP ${LDF} LDF)
+message(STATUS "Found LLVM: " ${LIBS})
+
 target_compile_definitions(Marble.RuntimeCompiler PUBLIC "BUILD_TYPE_DYNAMIC=1")
 if (${BUILD_PLATFORM} STREQUAL Win32)
-    execute_process(COMMAND CMD /c llvm-config --libs OUTPUT_VARIABLE LLVM_LIBRARIES OUTPUT_STRIP_TRAILING_WHITESPACE)
     target_link_libraries(Marble.RuntimeCompiler PUBLIC
-        ${LLVM_LIBRARIES}
+        ${LIBS} ${SYS_LIBS} ${LDF}
         clangFrontendTool
     )
     target_include_directories(Marble.RuntimeCompiler PUBLIC
         "${CMAKE_SOURCE_DIR}/src"
-        "${CMAKE_SOURCE_DIR}/cc1"
+        "${CMAKE_SOURCE_DIR}/clang-driver"
+        "${CMAKE_SOURCE_DIR}/dependencies/gcpp/include"
+        "${CMAKE_SOURCE_DIR}/dependencies/Kaleidoscope"
         "${LLVM_INCLUDE_DIRS}"
     )
 endif()
-message("LLVM required libraries found: ${LLVM_LIBRARIES}")
 
 project(testexecutable)
 

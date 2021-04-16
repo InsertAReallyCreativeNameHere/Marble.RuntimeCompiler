@@ -1,11 +1,27 @@
-#include <Core/CppCompiler.h>
+#include <iostream>
+#include <RuntimeCompiler/RuntimeCompiler.h>
 
-using namespace Marble::JIT;
+using namespace Marble::RuntimeCompiler;
 
-int main(int argc, char* argv[])
+int main()
 {
-    (void)argc;
-    (void)argv;
+    Compiler::init();
+    
+    int i = Compiler::eval<int>("return 420;");
+    std::cout << i << std::endl;
+    i = Compiler::eval<int>("return 69;");
+    std::cout << i << std::endl;
+    i = Compiler::eval<int>("return 1337;");
+    std::cout << i << std::endl;
+    system("pause");
+    i = Compiler::eval<int>
+    (R"(
+        int ret = 0;
+        for (int i = 0; i < 10; i++)
+            ret += i;
+        return ret;
+    )");
+    std::cout << i << std::endl;
 
-    CppCompiler::invoke("-emit-llvm -emit-llvm-bc -std=c++14 -stdlib=libc++ -resource-dir /path/to/llvm-clang-build/lib/clang/4.0.1/ -o /tmp/bitcode.bc -x c++ /tmp/source.cpp");
+    system("pause");
 }
