@@ -28,7 +28,7 @@
 
 ## Getting Started
  ### Basics:
- Try using Marble::RuntimeCompiler::eval<T>(const std::string_view&) to immediately run any function and get its return result. It grabs a string and runs it as if it were C++.
+ Try using Marble::RuntimeCompiler::eval<T>(const std::string_view&) to immediately run any code and get its return result. It grabs a string and runs it as if it were C++.
  ### Documentation:
  Check out the wiki!
 
