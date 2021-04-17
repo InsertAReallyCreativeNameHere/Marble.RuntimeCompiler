@@ -13,6 +13,8 @@ int main()
     std::cout << i << std::endl;
     i = Compiler::eval<int>("return 1337;");
     std::cout << i << std::endl;
+    i = Compiler::eval<int>("weed");
+    std::cout << i << std::endl;
     system("pause");
     i = Compiler::eval<int>
     (R"(
