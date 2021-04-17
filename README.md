@@ -8,10 +8,9 @@
  - A large quantity of patience.
  - Make sure the Clang/LLVM binaries, libraries, and includes are in your PATH.
  ### Preparing and Compiling:
- - Copy ```llvm-project/clang/tools/driver/cc1_main.cpp``` to ```Marble.RuntimeCompiler/clang-driver```.
- - Build llvm with clang enabled.
-   - Use -DLLVM_ENABLE_PROJECTS="clang" as an argument when running the cmake command.
-   - Include ```... "cmake.configureSettings": { ... "LLVM_ENABLE_PROJECTS": "clang", ... }, ...``` in ```${workspaceFolder}/.vscode/settings.json``` for running cmake through CMake-Tools for Visual Studio Code ("..." means other fields).
+ - Build llvm 12.0.0 with clang enabled and the host target.
+   - Include -DLLVM_ENABLE_PROJECTS="clang" -DLLVM_TARGETS_TO_BUILD="host" as arguments when running the cmake command.
+   - Include ```... "cmake.configureSettings": { ..., "LLVM_ENABLE_PROJECTS": "clang", "LLVM_TARGETS_TO_BUILD": "host", ... }, ...``` in ```${workspaceFolder}/.vscode/settings.json``` for running cmake through CMake-Tools for Visual Studio Code ("..." means other JSON data).
    - I used
      ```bash
      cmake -G"MinGW Makefiles" \
@@ -33,6 +32,6 @@
  Check out the wiki!
 
 ## License
-whatever license llvm is under  
+GNUGPLv3  
 no its not "stealing" sources im just _reappropriating_ them.  
 pls dont sue me llvm
