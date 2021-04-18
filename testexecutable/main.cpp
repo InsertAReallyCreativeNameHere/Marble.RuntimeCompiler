@@ -1,26 +1,30 @@
 #include <iostream>
 #include <RuntimeCompiler/RuntimeCompiler.h>
 
-using namespace Marble::RuntimeCompiler;
+using namespace Marble;
+
+int eval()
+{
+    return 0;
+}
 
 int main()
 {
-    Compiler::init();
+    RuntimeCompiler::init();
+
+    std::cout << gcpp::type_name<decltype(eval)>() << std::endl;
     
-    int i = Compiler::eval<int>("return 420;");
+    int i = RuntimeCompiler::evaluate<int>("return 420;");
     std::cout << i << std::endl;
-    i = Compiler::eval<int>("return 69;");
+    i = RuntimeCompiler::evaluate<long>("return 69;");
     std::cout << i << std::endl;
-    i = Compiler::eval<int>("return 1337;");
+    i = RuntimeCompiler::evaluate<unsigned>("return 1337;");
     std::cout << i << std::endl;
-    i = Compiler::eval<int>("weed");
-    std::cout << i << std::endl;
-    system("pause");
-    i = Compiler::eval<int>
+    i = RuntimeCompiler::evaluate<int>
     (R"(
-        int ret = 0;
-        for (int i = 0; i < 10; i++)
-            ret += i;
+        unsigned long long ret = 2;
+        for (int i = beg; i < end; i++)
+            ret *= i;
         return ret;
     )");
     std::cout << i << std::endl;

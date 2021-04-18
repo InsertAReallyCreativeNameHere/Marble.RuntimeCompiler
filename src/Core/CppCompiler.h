@@ -2,6 +2,8 @@
 
 #include <inc.h>
 
+#include <vector>
+
 namespace Marble
 {
     namespace Internal

@@ -24,7 +24,7 @@ find_package(Clang REQUIRED CONFIG)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic-errors -std=c++17") # Don't forget, put -flto back when done with making this library.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic-errors -std=c++17")
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
     else()
@@ -36,9 +36,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(COMPILER "gcc")
     endif()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=lld -flto -pthread -std=c++17")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=lld -pthread -std=c++17")
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
     else()
@@ -55,7 +53,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin/${BUILD_ARCH}-${COMPILER}-${CMAKE_BUIL
 
 file(GLOB_RECURSE CMPSRCS configure_depends
     "${CMAKE_SOURCE_DIR}/src/*.cpp"
-    "${CMAKE_SOURCE_DIR}/clang-driver/*.cpp"
 )
 
 add_library(Marble.RuntimeCompiler SHARED ${CMPSRCS})

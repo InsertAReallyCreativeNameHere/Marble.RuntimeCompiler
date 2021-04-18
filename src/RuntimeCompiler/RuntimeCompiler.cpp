@@ -1,18 +1,24 @@
 #include "RuntimeCompiler.h"
 
 #include <filesystem>
-#include <KaleidoscopeJIT.h>
+#include <fstream>
+#include <clang/AST/ASTContext.h>
+#include <clang/AST/Mangle.h>
+#include <clang/Frontend/CompilerInstance.h>
 #include <llvm/Bitcode/BitcodeReader.h>
 #include <llvm/Support/TargetSelect.h>
+#include <KaleidoscopeJIT.h>
 
+using namespace Marble;
 using namespace Marble::Internal;
-using namespace Marble::RuntimeCompiler;
 namespace fs = std::filesystem;
 
-std::unique_ptr<llvm::orc::ThreadSafeContext> Compiler::context;
-std::unique_ptr<llvm::orc::KaleidoscopeJIT> Compiler::jit;
+std::unique_ptr<llvm::orc::ThreadSafeContext> RuntimeCompiler::context;
+std::unique_ptr<llvm::orc::KaleidoscopeJIT> RuntimeCompiler::jit;
 
-void Compiler::init()
+char* RuntimeCompiler::evalMangled;
+
+void RuntimeCompiler::init()
 {
     if (llvm::InitializeNativeTarget() == 1)
         puts("fricc");
@@ -21,10 +27,10 @@ void Compiler::init()
     if (llvm::InitializeNativeTargetAsmParser() == 1)
         puts("fricc");
     
-    Compiler::context = std::make_unique<llvm::orc::ThreadSafeContext>(std::make_unique<llvm::LLVMContext>());
+    RuntimeCompiler::context = std::make_unique<llvm::orc::ThreadSafeContext>(std::make_unique<llvm::LLVMContext>());
 }
 
-llvm::JITTargetAddress Compiler::evalInternal(const std::string_view& code, const std::string& typeName)
+llvm::JITTargetAddress RuntimeCompiler::evalInternal(const std::string_view& code, const std::string& typeName)
 {
     std::ostringstream compileCode;
     compileCode <<
@@ -47,13 +53,19 @@ llvm::JITTargetAddress Compiler::evalInternal(const std::string_view& code, cons
         "RuntimeInternal/eval.cpp"
     });
     
-    Compiler::jit = std::move(llvm::orc::KaleidoscopeJIT::Create().get());
-    std::unique_ptr<llvm::Module> evalModule = std::move(llvm::parseBitcodeFile(llvm::MemoryBuffer::getFile("RuntimeInternal/eval.bc").get()->getMemBufferRef(), *Compiler::context->getContext()).get());
-    llvm::Error err = Compiler::jit->addModule({ std::move(evalModule), *Compiler::context });
+    RuntimeCompiler::jit = std::move(llvm::orc::KaleidoscopeJIT::Create().get());
+    std::unique_ptr<llvm::Module> evalModule = std::move(llvm::parseBitcodeFile
+    (
+        llvm::MemoryBuffer::getFile("RuntimeInternal/eval.bc").get()->getMemBufferRef(),
+        *RuntimeCompiler::context->getContext()
+    )
+    .get());
+    llvm::StringRef evalFuncName = evalModule->getFunctionList().begin()->getName();
+    llvm::Error err = RuntimeCompiler::jit->addModule({ std::move(evalModule), *RuntimeCompiler::context });
 
-    return Compiler::jit->lookup("_Z4evalv")->getAddress();
+    return RuntimeCompiler::jit->lookup(evalFuncName)->getAddress();
 }
-void Compiler::evalFinalize()
+void RuntimeCompiler::evalFinalize()
 {
-    Compiler::jit.reset();
+    RuntimeCompiler::jit.reset();
 }

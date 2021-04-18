@@ -2,13 +2,9 @@
 
 #include <inc.h>
 
-#include <fstream>
-#include <sstream>
 #include <string_view>
 #include <type_name.h>
 #include <llvm/ExecutionEngine/JITSymbol.h>
-#include <llvm/ExecutionEngine/Orc/ThreadSafeModule.h>
-#include <llvm/IR/LLVMContext.h>
 #include <Core/CppCompiler.h>
 
 namespace llvm
@@ -22,29 +18,35 @@ namespace llvm
 
 namespace Marble
 {
-    namespace RuntimeCompiler
+    struct coreapi CppCompileOptions final
     {
-        class coreapi Compiler final
+        CppCompileOptions& withIncludeDirectories(const std::vector<std::string_view>& includeDirs);
+        CppCompileOptions& withIncludes(const std::vector<std::string_view>& includeFiles);
+    private:
+        std::vector<std::string_view> includeDirs;
+        std::vector<std::string_view> includeFiles;
+    };
+
+    class coreapi RuntimeCompiler final
+    {
+        static std::unique_ptr<llvm::orc::ThreadSafeContext> context;
+        static std::unique_ptr<llvm::orc::KaleidoscopeJIT> jit;
+
+        static char* evalMangled;
+        
+        static llvm::JITTargetAddress evalInternal(const std::string_view& code, const std::string& typeName);
+        static void evalFinalize();
+    public:
+        RuntimeCompiler() = delete;
+
+        static void init();
+
+        template <typename T>
+        static T evaluate(const std::string_view& code)
         {
-            static std::unique_ptr<llvm::orc::ThreadSafeContext> context;
-            static std::unique_ptr<llvm::orc::KaleidoscopeJIT> jit;
-            
-            static llvm::JITTargetAddress evalInternal(const std::string_view& code, const std::string& typeName);
-            static void evalFinalize();
-        public:
-            Compiler() = delete;
-
-            static void init();
-
-            static void evalCleanup();
-
-            template <typename T>
-            static T eval(const std::string_view& code)
-            {
-                T ret = ((T (*)())Compiler::evalInternal(code, gcpp::type_name<T>()))();
-                Compiler::evalFinalize();
-                return ret;
-            }
-        };
-    }
+            T ret = ((T (*)())RuntimeCompiler::evalInternal(code, gcpp::type_name<T>()))();
+            RuntimeCompiler::evalFinalize();
+            return ret;
+        }
+    };
 }
