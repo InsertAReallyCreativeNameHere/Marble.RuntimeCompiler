@@ -23,11 +23,11 @@
      to build my copy of Clang/LLVM on Windows x86_64.
  - Configure Marble.RuntimeCompiler.
  - Build Marble.RuntimeCompiler.
- - Use testexecutable.exe to test whether stuff works.
+ - Run testexecutable.exe to test whether stuff works.
 
 ## Getting Started
  ### Basics:
- Try using Marble::RuntimeCompiler::eval<T>(const std::string_view&) to immediately run any code and get its return result. It grabs a string and runs it as if it were C++.
+ Try using Marble::RuntimeCompiler::evaluate<T>(const std::string_view&) to immediately run any code and get its return result. It grabs a string and runs it as if it were C++.
  ### Documentation:
  Check out the wiki!
 
