@@ -33,5 +33,5 @@
 
 ## License
 GNUGPLv3  
-no its not "stealing" sources im just _reappropriating_ them.  
+no its not "stealing" sources im just _reappropriating_ them. for legal reasons no sources are stolen.
 pls dont sue me llvm
