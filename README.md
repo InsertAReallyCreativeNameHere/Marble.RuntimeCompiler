@@ -32,6 +32,6 @@ Marble.RuntimeCompiler is a project that aims to make clang/LLVM portable. It al
  Check out the wiki!
 
 ## License
-GNUGPLv3  
+Attribution-NonCommercial-ShareAlike 4.0  
 no its not "stealing" sources im just _reappropriating_ them. for legal reasons no sources are stolen.  
 pls dont sue me llvm
