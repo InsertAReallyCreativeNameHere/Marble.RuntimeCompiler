@@ -1,0 +1,14 @@
+[
+    {
+        "name": "GCC 10.3.0",
+        "compilers":
+        {
+            "CXX": "${workspaceFolder}/../CykaBlyat-Tools/msys64/mingw64/bin/g++.exe",
+            "C": "${workspaceFolder}/../CykaBlyat-Tools/msys64/mingw64/bin/gcc.exe"
+        },
+        "preferredGenerator":
+        {
+            "name": "MinGW Makefiles"
+        }
+    }
+]
