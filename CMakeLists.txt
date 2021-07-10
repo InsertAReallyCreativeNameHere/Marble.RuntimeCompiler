@@ -32,11 +32,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     else()
         set(COMPILER "gcc")
     endif()
-    set(BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING "Configuration string in output dir." FORCE)
+    set(BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE INTERNAL "Configuration string in output dir." FORCE)
     set(OUTNAME "${BUILD_ARCH}-${COMPILER}-${BUILD_TYPE}-${BUILD_PLATFORM}")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set(COMPILER "Clang")
-    set(BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING "Configuration string in output dir." FORCE)
+    set(BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE INTERNAL "Configuration string in output dir." FORCE)
     set(OUTNAME "${BUILD_ARCH}-${COMPILER}-${BUILD_TYPE}-${BUILD_PLATFORM}")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(COMPILER "MSVC")
@@ -74,20 +74,83 @@ file(GLOB_RECURSE CMPSRCS configure_depends
 
 add_library(Marble.RuntimeCompiler SHARED ${CMPSRCS})
 
-set(LIBS ${LLVM_LIBS})
-message(STATUS "Found LLVM: " ${LIBS})
-
-get_cmake_property(_variableNames VARIABLES)
-list (SORT _variableNames)
-foreach (_variableName ${_variableNames})
-    message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()
-
 target_compile_definitions(Marble.RuntimeCompiler PUBLIC "BUILD_TYPE_DYNAMIC=1")
 if (${BUILD_PLATFORM} STREQUAL Win32)
     target_link_libraries(Marble.RuntimeCompiler PUBLIC
-        ${LIBS}
         clangFrontendTool
+
+        LLVMWindowsManifest
+        LLVMXRay
+        LLVMLibDriver
+        LLVMDlltoolDriver
+        LLVMCoverage
+        LLVMLineEditor
+        LLVMX86Disassembler
+        LLVMX86AsmParser
+        LLVMX86CodeGen
+        LLVMX86Desc
+        LLVMX86Info
+        LLVMOrcJIT
+        LLVMMCJIT
+        LLVMJITLink
+        LLVMOrcTargetProcess
+        LLVMOrcShared
+        LLVMInterpreter
+        LLVMExecutionEngine
+        LLVMRuntimeDyld
+        LLVMSymbolize
+        LLVMDebugInfoPDB
+        LLVMDebugInfoGSYM
+        LLVMOption
+        LLVMObjectYAML
+        LLVMMCA
+        LLVMMCDisassembler
+        LLVMLTO
+        LLVMPasses
+        LLVMCFGuard
+        LLVMCoroutines
+        LLVMObjCARCOpts
+        LLVMipo
+        LLVMVectorize
+        LLVMLinker
+        LLVMInstrumentation
+        LLVMFrontendOpenMP
+        LLVMFrontendOpenACC
+        LLVMExtensions
+        LLVMDWARFLinker
+        LLVMGlobalISel
+        LLVMMIRParser
+        LLVMAsmPrinter
+        LLVMDebugInfoDWARF
+        LLVMSelectionDAG
+        LLVMCodeGen
+        LLVMIRReader
+        LLVMAsmParser
+        LLVMInterfaceStub
+        LLVMFileCheck
+        LLVMFuzzMutate
+        LLVMTarget
+        LLVMScalarOpts
+        LLVMInstCombine
+        LLVMAggressiveInstCombine
+        LLVMTransformUtils
+        LLVMBitWriter
+        LLVMAnalysis
+        LLVMProfileData
+        LLVMObject
+        LLVMTextAPI
+        LLVMMCParser
+        LLVMMC
+        LLVMDebugInfoCodeView
+        LLVMDebugInfoMSF
+        LLVMBitReader
+        LLVMCore
+        LLVMRemarks
+        LLVMBitstreamReader
+        LLVMBinaryFormat
+        LLVMTableGen
+        LLVMSupport
+        LLVMDemangle
     )
     target_include_directories(Marble.RuntimeCompiler PUBLIC
         "${CMAKE_SOURCE_DIR}/src"

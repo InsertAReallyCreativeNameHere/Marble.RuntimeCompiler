@@ -1,10 +1,22 @@
 [
     {
-        "name": "GCC 10.3.0",
+        "name": "(i686-MinGW) GCC 10.3.0",
         "compilers":
         {
-            "CXX": "${workspaceFolder}/../CykaBlyat-Tools/msys64/mingw64/bin/g++.exe",
-            "C": "${workspaceFolder}/../CykaBlyat-Tools/msys64/mingw64/bin/gcc.exe"
+            "CXX": "${workspaceFolder}/../CykaBlyat-Tools/mingw64/bin/x86_64-w64-mingw32-g++.exe",
+            "C": "${workspaceFolder}/../CykaBlyat-Tools/mingw64/bin/x86_64-w64-mingw32-gcc.exe"
+        },
+        "preferredGenerator":
+        {
+            "name": "MinGW Makefiles"
+        }
+    },
+    {
+        "name": "(x86_64-MinGW) GCC 10.3.0",
+        "compilers":
+        {
+            "CXX": "${workspaceFolder}/../CykaBlyat-Tools/mingw64/bin/g++.exe",
+            "C": "${workspaceFolder}/../CykaBlyat-Tools/mingw64/bin/gcc.exe"
         },
         "preferredGenerator":
         {
