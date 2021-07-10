@@ -75,91 +75,89 @@ file(GLOB_RECURSE CMPSRCS configure_depends
 add_library(Marble.RuntimeCompiler SHARED ${CMPSRCS})
 
 target_compile_definitions(Marble.RuntimeCompiler PUBLIC "BUILD_TYPE_DYNAMIC=1")
-if (${BUILD_PLATFORM} STREQUAL Win32)
-    target_link_libraries(Marble.RuntimeCompiler PUBLIC
-        clangFrontendTool
+target_link_libraries(Marble.RuntimeCompiler PUBLIC
+    clangFrontendTool
 
-        LLVMWindowsManifest
-        LLVMXRay
-        LLVMLibDriver
-        LLVMDlltoolDriver
-        LLVMCoverage
-        LLVMLineEditor
-        LLVMX86Disassembler
-        LLVMX86AsmParser
-        LLVMX86CodeGen
-        LLVMX86Desc
-        LLVMX86Info
-        LLVMOrcJIT
-        LLVMMCJIT
-        LLVMJITLink
-        LLVMOrcTargetProcess
-        LLVMOrcShared
-        LLVMInterpreter
-        LLVMExecutionEngine
-        LLVMRuntimeDyld
-        LLVMSymbolize
-        LLVMDebugInfoPDB
-        LLVMDebugInfoGSYM
-        LLVMOption
-        LLVMObjectYAML
-        LLVMMCA
-        LLVMMCDisassembler
-        LLVMLTO
-        LLVMPasses
-        LLVMCFGuard
-        LLVMCoroutines
-        LLVMObjCARCOpts
-        LLVMipo
-        LLVMVectorize
-        LLVMLinker
-        LLVMInstrumentation
-        LLVMFrontendOpenMP
-        LLVMFrontendOpenACC
-        LLVMExtensions
-        LLVMDWARFLinker
-        LLVMGlobalISel
-        LLVMMIRParser
-        LLVMAsmPrinter
-        LLVMDebugInfoDWARF
-        LLVMSelectionDAG
-        LLVMCodeGen
-        LLVMIRReader
-        LLVMAsmParser
-        LLVMInterfaceStub
-        LLVMFileCheck
-        LLVMFuzzMutate
-        LLVMTarget
-        LLVMScalarOpts
-        LLVMInstCombine
-        LLVMAggressiveInstCombine
-        LLVMTransformUtils
-        LLVMBitWriter
-        LLVMAnalysis
-        LLVMProfileData
-        LLVMObject
-        LLVMTextAPI
-        LLVMMCParser
-        LLVMMC
-        LLVMDebugInfoCodeView
-        LLVMDebugInfoMSF
-        LLVMBitReader
-        LLVMCore
-        LLVMRemarks
-        LLVMBitstreamReader
-        LLVMBinaryFormat
-        LLVMTableGen
-        LLVMSupport
-        LLVMDemangle
-    )
-    target_include_directories(Marble.RuntimeCompiler PUBLIC
-        "${CMAKE_SOURCE_DIR}/src"
-        "${CMAKE_SOURCE_DIR}/clang-driver"
-        "${CMAKE_SOURCE_DIR}/dependencies/gcpp/include"
-        "${CMAKE_SOURCE_DIR}/dependencies/Kaleidoscope"
-        "${LLVM_INCLUDE_DIRS}"
-    )
-endif()
+    LLVMWindowsManifest
+    LLVMXRay
+    LLVMLibDriver
+    LLVMDlltoolDriver
+    LLVMCoverage
+    LLVMLineEditor
+    LLVMX86Disassembler
+    LLVMX86AsmParser
+    LLVMX86CodeGen
+    LLVMX86Desc
+    LLVMX86Info
+    LLVMOrcJIT
+    LLVMMCJIT
+    LLVMJITLink
+    LLVMOrcTargetProcess
+    LLVMOrcShared
+    LLVMInterpreter
+    LLVMExecutionEngine
+    LLVMRuntimeDyld
+    LLVMSymbolize
+    LLVMDebugInfoPDB
+    LLVMDebugInfoGSYM
+    LLVMOption
+    LLVMObjectYAML
+    LLVMMCA
+    LLVMMCDisassembler
+    LLVMLTO
+    LLVMPasses
+    LLVMCFGuard
+    LLVMCoroutines
+    LLVMObjCARCOpts
+    LLVMipo
+    LLVMVectorize
+    LLVMLinker
+    LLVMInstrumentation
+    LLVMFrontendOpenMP
+    LLVMFrontendOpenACC
+    LLVMExtensions
+    LLVMDWARFLinker
+    LLVMGlobalISel
+    LLVMMIRParser
+    LLVMAsmPrinter
+    LLVMDebugInfoDWARF
+    LLVMSelectionDAG
+    LLVMCodeGen
+    LLVMIRReader
+    LLVMAsmParser
+    LLVMInterfaceStub
+    LLVMFileCheck
+    LLVMFuzzMutate
+    LLVMTarget
+    LLVMScalarOpts
+    LLVMInstCombine
+    LLVMAggressiveInstCombine
+    LLVMTransformUtils
+    LLVMBitWriter
+    LLVMAnalysis
+    LLVMProfileData
+    LLVMObject
+    LLVMTextAPI
+    LLVMMCParser
+    LLVMMC
+    LLVMDebugInfoCodeView
+    LLVMDebugInfoMSF
+    LLVMBitReader
+    LLVMCore
+    LLVMRemarks
+    LLVMBitstreamReader
+    LLVMBinaryFormat
+    LLVMTableGen
+    LLVMSupport
+    LLVMDemangle
+)
+target_include_directories(Marble.RuntimeCompiler PUBLIC
+    "${CMAKE_SOURCE_DIR}/src"
+    "${CMAKE_SOURCE_DIR}/clang-driver"
+    "${CMAKE_SOURCE_DIR}/dependencies/gcpp/include"
+    "${CMAKE_SOURCE_DIR}/dependencies/Kaleidoscope"
+    "${LLVM_INCLUDE_DIRS}"
+)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../lib/${OUTNAME}/testexecutable)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../lib/${OUTNAME}/testexecutable)
@@ -171,13 +169,11 @@ file(GLOB_RECURSE TESTSRCS configure_depends
 
 add_executable(testexecutable ${TESTSRCS})
 
-if (${BUILD_PLATFORM} STREQUAL Win32)
-    target_link_libraries(testexecutable PUBLIC
-        Marble.RuntimeCompiler
-    )
-    target_include_directories(testexecutable PUBLIC
-    )
-endif()
+target_link_libraries(testexecutable PUBLIC
+    Marble.RuntimeCompiler
+)
+target_include_directories(testexecutable PUBLIC
+)
 
 add_custom_command(TARGET testexecutable POST_BUILD
 COMMAND ${CMAKE_COMMAND} -E copy_if_different
