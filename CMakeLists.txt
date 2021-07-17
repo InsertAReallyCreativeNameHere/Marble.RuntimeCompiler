@@ -156,7 +156,10 @@ target_include_directories(Marble.RuntimeCompiler PUBLIC
     "${CMAKE_SOURCE_DIR}/clang-driver"
     "${CMAKE_SOURCE_DIR}/dependencies/gcpp/include"
     "${CMAKE_SOURCE_DIR}/dependencies/Kaleidoscope"
-    "${LLVM_INCLUDE_DIRS}"
+    "${CMAKE_SOURCE_DIR}/external/llvm-project/clang/include"
+    "${CMAKE_SOURCE_DIR}/external/llvm-project/llvm/include"
+    "${CMAKE_SOURCE_DIR}/build/external/llvm-project/llvm/include"
+    "${CMAKE_SOURCE_DIR}/build/external/llvm-project/llvm/tools/clang/include"
 )
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../lib/${OUTNAME}/testexecutable)

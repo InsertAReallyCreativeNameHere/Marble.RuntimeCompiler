@@ -38,10 +38,9 @@ namespace Marble
 
     class coreapi RuntimeCompiler final
     {
-        static std::unique_ptr<llvm::orc::ThreadSafeContext> context;
         static std::unique_ptr<llvm::orc::KaleidoscopeJIT> jit;
 
-        static llvm::JITTargetAddress evalInternal(const std::string_view& code, const std::string& typeName, const CppCompileOptions& compileOptions);
+        static llvm::JITTargetAddress evalInternal(std::string_view code, const std::string& typeName, const CppCompileOptions& compileOptions);
         static void evalFinalize();
     public:
         RuntimeCompiler() = delete;
@@ -49,7 +48,7 @@ namespace Marble
         static void init();
 
         template <typename T>
-        static T evaluate(const std::string_view& code, const CppCompileOptions& compileOptions = CppCompileOptions())
+        static T evaluate(std::string_view code, const CppCompileOptions& compileOptions = CppCompileOptions())
         {
             if constexpr (std::is_same<T, void>::value)
             {

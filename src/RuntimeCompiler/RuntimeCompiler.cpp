@@ -65,7 +65,6 @@ CppCompileOptions& CppCompileOptions::usingCppStandard(const std::string_view& s
     return *this;
 }
 
-std::unique_ptr<llvm::orc::ThreadSafeContext> RuntimeCompiler::context;
 std::unique_ptr<llvm::orc::KaleidoscopeJIT> RuntimeCompiler::jit;
 
 void RuntimeCompiler::init()
@@ -77,10 +76,10 @@ void RuntimeCompiler::init()
     if (llvm::InitializeNativeTargetAsmParser() == 1)
         puts("fricc");
     
-    RuntimeCompiler::context = std::make_unique<llvm::orc::ThreadSafeContext>(std::make_unique<llvm::LLVMContext>());
+    CppCompiler::init();
 }
 
-llvm::JITTargetAddress RuntimeCompiler::evalInternal(const std::string_view& code, const std::string& typeName, const CppCompileOptions& compileOptions)
+llvm::JITTargetAddress RuntimeCompiler::evalInternal(std::string_view code, const std::string& typeName, const CppCompileOptions& compileOptions)
 {
     std::ostringstream compileCode;
     for (auto it = compileOptions.includeFiles.begin(); it != compileOptions.includeFiles.end(); ++it)
@@ -88,50 +87,33 @@ llvm::JITTargetAddress RuntimeCompiler::evalInternal(const std::string_view& cod
     for (auto it = compileOptions.usings.begin(); it != compileOptions.usings.end(); ++it)
         compileCode << *it << "\n";
     compileCode <<
-    "void puts(const char*);"
-    "\n" <<
     typeName <<
     " eval()\n{\n" <<
     code.begin() <<
     "\n}";
 
-    if (!std::filesystem::exists("RuntimeInternal/"))
-        std::filesystem::create_directory("RuntimeInternal/");
-    
-    std::ofstream file("RuntimeInternal/eval.cpp");
-    file << compileCode.str();
-    file.close();
-
     std::vector<const char*> args
     ({
         "-emit-llvm",
-        "-emit-llvm-bc",
-        compileOptions.cppStandard.c_str()
+        "-emit-llvm-bc"///,
+        ///compileOptions.cppStandard.c_str()
     });
     for (auto it = compileOptions.includeDirs.begin(); it != compileOptions.includeDirs.end(); ++it)
         args.push_back((*it).c_str());
-    args.insert
-    (
-        args.end(),
-        {
-            "-resource-dir",
-            "D:\\Github\\CykaBlyat-Tools\\mingw32\\lib\\clang\\12.0.0",
-            "-o", "RuntimeInternal/eval.bc",
-            "-x", "c++",
-            "RuntimeInternal/eval.cpp"
-        }
-    );
-    Internal::CppCompiler::invoke(args);
 
     RuntimeCompiler::jit = std::move(llvm::orc::KaleidoscopeJIT::Create().get());
+
+    llvm::Module* evalModule = Internal::CppCompiler::invoke(args, compileCode.str().c_str()).release();
+
+    /*RuntimeCompiler::jit = std::move(llvm::orc::KaleidoscopeJIT::Create().get());
     std::unique_ptr<llvm::Module> evalModule = std::move(llvm::parseBitcodeFile
     (
         llvm::MemoryBuffer::getFile("RuntimeInternal/eval.bc").get()->getMemBufferRef(),
         *RuntimeCompiler::context->getContext()
     )
-    .get());
+    .get());*/
     llvm::StringRef evalFuncName = evalModule->getFunctionList().begin()->getName();
-    llvm::Error err = RuntimeCompiler::jit->addModule({ std::move(evalModule), *RuntimeCompiler::context });
+    llvm::Error err = RuntimeCompiler::jit->addModule({ std::unique_ptr<llvm::Module>(evalModule), *CppCompiler::context });
 
     return RuntimeCompiler::jit->lookup(evalFuncName)->getAddress();
 }
