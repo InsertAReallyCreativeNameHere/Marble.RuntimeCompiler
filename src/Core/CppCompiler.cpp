@@ -196,64 +196,40 @@
 
     std::unique_ptr<llvm::Module> CppCompiler::invoke(const std::vector<const char*>& args, const char* code, clang::Language lang)
     {
-        clang::IntrusiveRefCntPtr<clang::DiagnosticOptions> diagnosticOptions = new clang::DiagnosticOptions;
-        clang::TextDiagnosticPrinter* textDiagnosticPrinter = new clang::TextDiagnosticPrinter(llvm::outs(), diagnosticOptions.get());
-        clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagIDs = new clang::DiagnosticIDs;
+        clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagIDs = llvm::makeIntrusiveRefCnt<clang::DiagnosticIDs>();
+        clang::IntrusiveRefCntPtr<clang::DiagnosticOptions> diagnosticOptions = llvm::makeIntrusiveRefCnt<clang::DiagnosticOptions>();
+        clang::TextDiagnosticPrinter textDiagnosticPrinter(llvm::outs(), diagnosticOptions.get());
     
-        clang::DiagnosticsEngine diagnosticsEngine(diagIDs, diagnosticOptions, textDiagnosticPrinter);
+        clang::DiagnosticsEngine diagnosticsEngine(diagIDs, diagnosticOptions, &textDiagnosticPrinter, false);
     
         clang::CompilerInstance compilerInstance;
         auto& compilerInvocation = compilerInstance.getInvocation();
     
-        std::stringstream ss;
-        ss << "-triple=" << llvm::sys::getDefaultTargetTriple();
-    
-        std::istream_iterator<std::string> begin(ss);
-        std::istream_iterator<std::string> end;
-        std::istream_iterator<std::string> i = begin;
-        std::vector<const char*> itemcstrs;
-        std::vector<std::string> itemstrs;
-        while (i != end) {
-        itemstrs.push_back(*i);
-        ++i;
-        }
-    
-        for (unsigned idx = 0; idx < itemstrs.size(); idx++) {
-        // note: if itemstrs is modified after this, itemcstrs will be full
-        // of invalid pointers! Could make copies, but would have to clean up then...
-        itemcstrs.push_back(itemstrs[idx].c_str());
-        }
-    
-        // clang::CompilerInvocation::CreateFromArgs(compilerInvocation, itemcstrs.data(), itemcstrs.data() + itemcstrs.size(), *diagnosticsEngine.release());
-        clang::CompilerInvocation::CreateFromArgs(compilerInvocation, llvm::ArrayRef(itemcstrs.data(), itemcstrs.size()), diagnosticsEngine);
+        clang::CompilerInvocation::CreateFromArgs(compilerInvocation, llvm::ArrayRef(args.data(), args.size()), diagnosticsEngine);
     
         auto* languageOptions = compilerInvocation.getLangOpts();
         auto& preprocessorOptions = compilerInvocation.getPreprocessorOpts();
         auto& targetOptions = compilerInvocation.getTargetOpts();
         auto& frontEndOptions = compilerInvocation.getFrontendOpts();
-        #ifdef NV_LLVM_VERBOSE
         frontEndOptions.ShowStats = true;
-        #endif
         auto& headerSearchOptions = compilerInvocation.getHeaderSearchOpts();
-        #ifdef NV_LLVM_VERBOSE
         headerSearchOptions.Verbose = true;
-        #endif
         auto& codeGenOptions = compilerInvocation.getCodeGenOpts();
     
         frontEndOptions.Inputs.clear();
         frontEndOptions.Inputs.push_back(clang::FrontendInputFile(llvm::MemoryBufferRef(code, code), clang::InputKind(lang)));
     
         targetOptions.Triple = llvm::sys::getDefaultTargetTriple();
-        compilerInstance.createDiagnostics(textDiagnosticPrinter, false);
+        compilerInstance.createDiagnostics(&textDiagnosticPrinter, false);
     
-        clang::CodeGenAction* action = new clang::EmitLLVMOnlyAction(CppCompiler::context->getContext());
+        clang::EmitLLVMOnlyAction action(CppCompiler::context->getContext());
     
-        if (!compilerInstance.ExecuteAction(*action))
+        if (!compilerInstance.ExecuteAction(action))
         {
             __debugbreak();
         }
 
-        std::unique_ptr<llvm::Module> module = std::move(action->takeModule());
+        std::unique_ptr<llvm::Module> module = std::move(action.takeModule());
         if (!module)
         {
             __debugbreak();

@@ -7,6 +7,7 @@
 #include <clang/Frontend/CompilerInstance.h>
 #include <llvm/Bitcode/BitcodeReader.h>
 #include <llvm/Support/DynamicLibrary.h>
+#include <llvm/Support/Host.h>
 #include <llvm/Support/TargetSelect.h>
 #include <KaleidoscopeJIT.h>
 
@@ -94,9 +95,7 @@ llvm::JITTargetAddress RuntimeCompiler::evalInternal(std::string_view code, cons
 
     std::vector<const char*> args
     ({
-        "-emit-llvm",
-        "-emit-llvm-bc"///,
-        ///compileOptions.cppStandard.c_str()
+        "-triple=", llvm::sys::getDefaultTargetTriple().c_str()
     });
     for (auto it = compileOptions.includeDirs.begin(); it != compileOptions.includeDirs.end(); ++it)
         args.push_back((*it).c_str());
@@ -112,10 +111,9 @@ llvm::JITTargetAddress RuntimeCompiler::evalInternal(std::string_view code, cons
         *RuntimeCompiler::context->getContext()
     )
     .get());*/
-    llvm::StringRef evalFuncName = evalModule->getFunctionList().begin()->getName();
     llvm::Error err = RuntimeCompiler::jit->addModule({ std::unique_ptr<llvm::Module>(evalModule), *CppCompiler::context });
 
-    return RuntimeCompiler::jit->lookup(evalFuncName)->getAddress();
+    return RuntimeCompiler::jit->lookup("eval")->getAddress();
 }
 void RuntimeCompiler::evalFinalize()
 {
