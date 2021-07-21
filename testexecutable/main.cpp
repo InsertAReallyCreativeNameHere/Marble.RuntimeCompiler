@@ -14,6 +14,8 @@ int main()
 
     int i = RuntimeCompiler::evaluate<int>("return 420;");
     std::cout << i << '\n';
+    i = RuntimeCompiler::evaluate<int>("return 69;");
+    std::cout << i << '\n';
 
     system("pause");
 }

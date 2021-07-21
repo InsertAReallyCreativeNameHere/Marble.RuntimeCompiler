@@ -14,7 +14,7 @@
 using namespace Marble;
 using namespace Marble::Internal;
 namespace fs = std::filesystem;
-
+/*
 CppCompileOptions& CppCompileOptions::withIncludeDirectories(const std::vector<std::string_view>& includeDirs)
 {
     this->includeDirs.reserve(includeDirs.size() * 2);
@@ -65,9 +65,7 @@ CppCompileOptions& CppCompileOptions::usingCppStandard(const std::string_view& s
     
     return *this;
 }
-
-std::unique_ptr<llvm::orc::KaleidoscopeJIT> RuntimeCompiler::jit;
-
+*/
 void RuntimeCompiler::init()
 {
     if (llvm::InitializeNativeTarget() == 1)
@@ -80,6 +78,7 @@ void RuntimeCompiler::init()
     CppCompiler::init();
 }
 
+/*
 llvm::JITTargetAddress RuntimeCompiler::evalInternal(std::string_view code, const std::string& typeName, const CppCompileOptions& compileOptions)
 {
     std::ostringstream compileCode;
@@ -102,16 +101,9 @@ llvm::JITTargetAddress RuntimeCompiler::evalInternal(std::string_view code, cons
 
     RuntimeCompiler::jit = std::move(llvm::orc::KaleidoscopeJIT::Create().get());
 
-    llvm::Module* evalModule = Internal::CppCompiler::invoke(args, compileCode.str().c_str()).release();
+    llvm::Module* evalModule = Internal::CppCompiler::invoke(compileCode.str().c_str()).release();
 
-    /*RuntimeCompiler::jit = std::move(llvm::orc::KaleidoscopeJIT::Create().get());
-    std::unique_ptr<llvm::Module> evalModule = std::move(llvm::parseBitcodeFile
-    (
-        llvm::MemoryBuffer::getFile("RuntimeInternal/eval.bc").get()->getMemBufferRef(),
-        *RuntimeCompiler::context->getContext()
-    )
-    .get());*/
-    llvm::Error err = RuntimeCompiler::jit->addModule({ std::unique_ptr<llvm::Module>(evalModule), *CppCompiler::context });
+    llvm::Error err = RuntimeCompiler::jit->addModule(llvm::orc::ThreadSafeModule(std::unique_ptr<llvm::Module>(evalModule), std::make_unique<llvm::LLVMContext>()));
 
     return RuntimeCompiler::jit->lookup("eval")->getAddress();
 }
@@ -119,3 +111,4 @@ void RuntimeCompiler::evalFinalize()
 {
     RuntimeCompiler::jit.reset();
 }
+*/

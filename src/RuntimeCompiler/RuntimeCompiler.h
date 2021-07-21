@@ -2,25 +2,18 @@
 
 #include <inc.h>
 
+#include <sstream>
 #include <string_view>
 #include <type_traits>
 #include <type_name.h>
 #include <llvm/ExecutionEngine/JITSymbol.h>
 #include <Core/CppCompiler.h>
-
-namespace llvm
-{
-    namespace orc
-    {
-        class ThreadSafeContext;
-        class KaleidoscopeJIT;
-    }
-}
+#include <RuntimeCompiler/CppCompilation.h>
 
 namespace Marble
 {
     class RuntimeCompiler;
-
+/*
     struct coreapi CppCompileOptions final
     {
         CppCompileOptions& withIncludeDirectories(const std::vector<std::string_view>& includeDirs);
@@ -35,32 +28,31 @@ namespace Marble
         std::vector<std::string> usings;
         std::string cppStandard = "-std=c++17";
     };
-
+*/
     class coreapi RuntimeCompiler final
     {
-        static std::unique_ptr<llvm::orc::KaleidoscopeJIT> jit;
-
-        static llvm::JITTargetAddress evalInternal(std::string_view code, const std::string& typeName, const CppCompileOptions& compileOptions);
-        static void evalFinalize();
+        static llvm::JITTargetAddress evalInternal(std::string typeName, std::string_view code);
     public:
         RuntimeCompiler() = delete;
 
         static void init();
 
         template <typename T>
-        static T evaluate(std::string_view code, const CppCompileOptions& compileOptions = CppCompileOptions())
+        inline static T evaluate(std::string_view code, const CppCompilationOptions& compileOptions = CppCompilationOptions())
         {
+            /*for (auto it = compileOptions.includeFiles.begin(); it != compileOptions.includeFiles.end(); ++it)
+                compileCode << *it << "\n";
+            for (auto it = compileOptions.usings.begin(); it != compileOptions.usings.end(); ++it)
+                compileCode << *it << "\n";*/
+            std::string compileCode(std::move(gcpp::type_name<T>()));
+            compileCode
+            .append(" eval()\n{\n")
+            .append(code.data())
+            .append("\n}");
+
             if constexpr (std::is_same<T, void>::value)
-            {
-                ((T (*)())RuntimeCompiler::evalInternal(code, gcpp::type_name<T>(), compileOptions))();
-                RuntimeCompiler::evalFinalize();
-            }
-            else
-            {
-                T ret = ((T (*)())RuntimeCompiler::evalInternal(code, gcpp::type_name<T>(), compileOptions))();
-                RuntimeCompiler::evalFinalize();
-                return ret;
-            }
+                ((T (*)())CppCompilation({ compileCode.c_str() }).lookup("eval"))();
+            else return ((T (*)())CppCompilation({ compileCode.c_str() }).lookup("eval"))();
         }
     };
 }
